@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReadingsValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EnergyConsumption</a> &gt; <a href="index.source.html" class="el_package">com.track.electricity.consumption.validator</a> &gt; <span class="el_source">ReadingsValidator.java</span></div><h1>ReadingsValidator.java</h1><pre class="source lang-java linenums">package com.track.electricity.consumption.validator;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache.ValueWrapper;
+import org.springframework.cache.guava.GuavaCache;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
+import com.track.electricity.consumption.annotations.ValidReadings;
+import com.track.electricity.consumption.config.CacheConfig;
+import com.track.electricity.consumption.constants.EnergyConsumptionConstants;
+import com.track.electricity.consumption.enums.MonthEnum;
+import com.track.electricity.consumption.vo.request.ElectricityReadingData;
+import com.track.electricity.consumption.vo.request.SaveOrUpdateReadingRequest;
+
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * MeterReadingsValidator performs validations on meter readings received in the
+ * application.
+ * 
+ * 1) Meter Reading of a month must not be greater than the previous month. 2)
+ * Profile data must exists. 3) Consumption for a month must be consistent based
+ * on the rule set and tolearance.
+ * 
+ * @author VIDYA
+ *
+ */
+<span class="nc" id="L39">@Slf4j</span>
+@Component
+<span class="nc" id="L41">public class ReadingsValidator implements ConstraintValidator&lt;ValidReadings, SaveOrUpdateReadingRequest&gt; {</span>
+
+	@Autowired
+	CacheConfig cacheConfig;
+
+	@Override
+	public void initialize(ValidReadings constraintAnnotation) {
+
+<span class="nc" id="L49">	}</span>
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.validation.ConstraintValidator#isValid(java.lang.Object,
+	 * javax.validation.ConstraintValidatorContext)
+	 */
+	@Override
+	public boolean isValid(SaveOrUpdateReadingRequest request, ConstraintValidatorContext context) {
+
+<span class="nc" id="L60">		boolean valid = true;</span>
+<span class="nc bnc" id="L61" title="All 4 branches missed.">		if (null != request &amp;&amp; !CollectionUtils.isEmpty(request.getMeterReadingData())) {</span>
+
+<span class="nc" id="L63">			Map&lt;String, List&lt;ElectricityReadingData&gt;&gt; groupedMap = request.getMeterReadingData().stream()</span>
+<span class="nc" id="L64">					.collect(Collectors.groupingBy(ElectricityReadingData::getMeterId));</span>
+
+<span class="nc bnc" id="L66" title="All 2 branches missed.">			for (Map.Entry&lt;String, List&lt;ElectricityReadingData&gt;&gt; entry : groupedMap.entrySet()) {</span>
+
+<span class="nc" id="L68">				log.info(&quot;::Processing Data for the MeterId::-&gt;&quot; + entry.getKey());</span>
+<span class="nc" id="L69">				List&lt;ElectricityReadingData&gt; listOfMeteringData = entry.getValue();</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">				for (ElectricityReadingData temp : listOfMeteringData) {</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">					if (temp.getMeterReading() &lt; 0)</span>
+<span class="nc" id="L72">						return false;</span>
+<span class="nc" id="L73">				}</span>
+<span class="nc" id="L74">			}</span>
+		}
+<span class="nc" id="L76">		return valid;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

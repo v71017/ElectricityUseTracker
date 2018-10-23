@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ElectricityReadingControllerImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EnergyConsumption</a> &gt; <a href="index.source.html" class="el_package">com.track.electricity.consumption.controller.impl</a> &gt; <span class="el_source">ElectricityReadingControllerImpl.java</span></div><h1>ElectricityReadingControllerImpl.java</h1><pre class="source lang-java linenums">package com.track.electricity.consumption.controller.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.track.electricity.consumption.cache.ElectricityReadingCacheService;
+import com.track.electricity.consumption.constants.ErrorConstants;
+import com.track.electricity.consumption.controller.ElectricityReadingController;
+import com.track.electricity.consumption.vo.request.GetReadingsRequest;
+import com.track.electricity.consumption.vo.request.CacheReading;
+import com.track.electricity.consumption.vo.request.RemoveReadingsRequest;
+import com.track.electricity.consumption.vo.request.SaveOrUpdateReadingRequest;
+import com.track.electricity.consumption.vo.response.BusinessError;
+import com.track.electricity.consumption.vo.response.GetElectricityReadingsResponse;
+import com.track.electricity.consumption.vo.response.RemoveElectricityReadingResponse;
+import com.track.electricity.consumption.vo.response.SaveOrUpdateElectricityReadingResponse;
+
+/**
+ * MeterReadingsControllerImpl provides CRUD operations for meter readings data.
+ * 1)Create Meter readings. 2)Fetch Meter Readings. 3)Remove meter readings.
+ * 4)Update meter readings.
+ * 
+ * @author VIDYA
+ *
+ */
+@Service
+<span class="fc" id="L38">public class ElectricityReadingControllerImpl implements ElectricityReadingController {</span>
+
+	@Autowired
+	ElectricityReadingCacheService meterReadingsCacheService;
+
+	/**
+	 * saveReadings operation save Electricity data in the system.
+	 * 
+	 * @param saveMeterReadingRequest
+	 * @param errors
+	 * @return
+	 */
+	@Override
+	public ResponseEntity&lt;SaveOrUpdateElectricityReadingResponse&gt; saveReadings(
+			@RequestBody @Valid SaveOrUpdateReadingRequest saveMeterReadingRequest, BindingResult errors) {
+
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		if (errors.hasErrors()) {</span>
+<span class="nc" id="L55">			List&lt;BusinessError&gt; errorList = new ArrayList&lt;BusinessError&gt;();</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">			for (ObjectError er : errors.getAllErrors()) {</span>
+<span class="nc" id="L57">				BusinessError br = new BusinessError(er.getDefaultMessage());</span>
+<span class="nc" id="L58">				errorList.add(br);</span>
+<span class="nc" id="L59">			}</span>
+
+<span class="nc bnc" id="L61" title="All 2 branches missed.">			if (!CollectionUtils.isEmpty(saveMeterReadingRequest.getMeterReadingData())</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">					&amp;&amp; meterReadingsCacheService.addOrUpdateReadings(saveMeterReadingRequest)) {</span>
+<span class="nc" id="L63">				return new ResponseEntity&lt;&gt;(new SaveOrUpdateElectricityReadingResponse(true, errorList), HttpStatus.OK);</span>
+			}
+<span class="nc" id="L65">			return new ResponseEntity&lt;&gt;(new SaveOrUpdateElectricityReadingResponse(false, errorList),</span>
+					HttpStatus.BAD_REQUEST);
+		}
+
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">		else if (meterReadingsCacheService.addOrUpdateReadings(saveMeterReadingRequest)) {</span>
+<span class="fc" id="L70">			return new ResponseEntity&lt;&gt;(new SaveOrUpdateElectricityReadingResponse(true), HttpStatus.OK);</span>
+		}
+
+<span class="nc" id="L73">		return new ResponseEntity&lt;&gt;(new SaveOrUpdateElectricityReadingResponse(false),</span>
+				HttpStatus.INTERNAL_SERVER_ERROR);
+
+	}
+
+	/**
+	 * getReadings operation fetches Electricity readings data from the system.
+	 * 
+	 * @param meterId
+	 * @param month
+	 * @return
+	 */
+	@Override
+	public ResponseEntity&lt;GetElectricityReadingsResponse&gt; getReadings(String meterId, String month) {
+
+<span class="nc" id="L88">		GetReadingsRequest getMeteringDataRequest = BuildCacheServiceRequest(meterId, month);</span>
+<span class="nc" id="L89">		CacheReading meterCache = meterReadingsCacheService.getReadingsFromCache(getMeteringDataRequest);</span>
+<span class="nc" id="L90">		GetElectricityReadingsResponse getMeteringDataResponse = new GetElectricityReadingsResponse();</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">		if (null != meterCache) {</span>
+<span class="nc" id="L92">			getMeteringDataResponse.setMeterId(meterCache.getMeterId());</span>
+<span class="nc" id="L93">			getMeteringDataResponse.setMeterReading(meterCache.getConsumption());</span>
+
+<span class="nc" id="L95">			return new ResponseEntity&lt;&gt;(getMeteringDataResponse, HttpStatus.OK);</span>
+		}
+
+<span class="nc" id="L98">		BusinessError br = new BusinessError(ErrorConstants.NO_DATA_FOUND);</span>
+<span class="nc" id="L99">		getMeteringDataResponse.setBusinessError(br);</span>
+<span class="nc" id="L100">		return new ResponseEntity&lt;&gt;(getMeteringDataResponse, HttpStatus.NO_CONTENT);</span>
+	}
+
+	@Override
+	public ResponseEntity&lt;SaveOrUpdateElectricityReadingResponse&gt; removeReadings1(
+			@RequestBody @Valid SaveOrUpdateReadingRequest saveMeterReadingRequest, BindingResult errors) {
+
+<span class="nc" id="L107">		System.out.println(saveMeterReadingRequest.getMeterReadingData().get(0).getMeterId());</span>
+<span class="nc" id="L108">		System.out.println(saveMeterReadingRequest.getMeterReadingData().get(0).getMonth());</span>
+
+<span class="nc" id="L110">		RemoveReadingsRequest removeReadingsRequest = new RemoveReadingsRequest();</span>
+
+<span class="nc" id="L112">		removeReadingsRequest.setMeterId(saveMeterReadingRequest.getMeterReadingData().get(0).getMeterId());</span>
+<span class="nc" id="L113">		removeReadingsRequest.setMonth(saveMeterReadingRequest.getMeterReadingData().get(0).getMonth());</span>
+
+<span class="nc bnc" id="L115" title="All 2 branches missed.">		if (meterReadingsCacheService.removeReadingsFromCache(removeReadingsRequest)) {</span>
+<span class="nc" id="L116">			return new ResponseEntity&lt;&gt;(new SaveOrUpdateElectricityReadingResponse(Boolean.TRUE), HttpStatus.OK);</span>
+		}
+<span class="nc" id="L118">		return new ResponseEntity&lt;&gt;(new SaveOrUpdateElectricityReadingResponse(Boolean.FALSE),</span>
+				HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	/**
+	 * removeMeterReadings operation removes Electricity reading data from the
+	 * system.
+	 * 
+	 * @param removeReadings
+	 * @return
+	 */
+	@Override
+	public ResponseEntity&lt;RemoveElectricityReadingResponse&gt; removeReadings(RemoveReadingsRequest removeReadingsRequest, BindingResult errors) {
+
+<span class="nc" id="L132">		System.out.println(removeReadingsRequest.getMeterId());</span>
+<span class="nc" id="L133">		System.out.println(removeReadingsRequest.getMonth());</span>
+
+<span class="nc bnc" id="L135" title="All 2 branches missed.">		if (meterReadingsCacheService.removeReadingsFromCache(removeReadingsRequest)) {</span>
+<span class="nc" id="L136">			return new ResponseEntity&lt;&gt;(new RemoveElectricityReadingResponse(Boolean.TRUE), HttpStatus.OK);</span>
+		}
+<span class="nc" id="L138">		return new ResponseEntity&lt;&gt;(new RemoveElectricityReadingResponse(Boolean.FALSE),</span>
+				HttpStatus.INTERNAL_SERVER_ERROR);
+
+	}
+
+	/**
+	 * BuildCacheServiceRequest build request fro fetching meter readings
+	 * 
+	 * @param meterId
+	 * @param month
+	 * @return
+	 */
+	private GetReadingsRequest BuildCacheServiceRequest(String meterId, String month) {
+<span class="nc" id="L151">		GetReadingsRequest getMeteringDataRequest = new GetReadingsRequest();</span>
+<span class="nc" id="L152">		getMeteringDataRequest.setMeterId(meterId);</span>
+<span class="nc" id="L153">		getMeteringDataRequest.setMonth(month);</span>
+<span class="nc" id="L154">		return getMeteringDataRequest;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

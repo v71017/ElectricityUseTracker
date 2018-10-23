@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.electricity.energy.consumption.controller.impl.ElectricityReadingControllerTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.35 sec - in com.electricity.energy.consumption.controller.impl.ElectricityReadingControllerTest

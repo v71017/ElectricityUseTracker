@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MonthEnum.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EnergyConsumption</a> &gt; <a href="index.source.html" class="el_package">com.track.electricity.consumption.enums</a> &gt; <span class="el_source">MonthEnum.java</span></div><h1>MonthEnum.java</h1><pre class="source lang-java linenums">package com.track.electricity.consumption.enums;
+
+/**MonthEnum is used to map all the month to specific index position
+ * 
+ * @author VIDYA
+ *
+ */
+<span class="nc" id="L8">public enum MonthEnum {</span>
+	
+<span class="nc" id="L10">	JAN(&quot;JAN&quot;,1),</span>
+<span class="nc" id="L11">	FEB(&quot;FEB&quot;,2),</span>
+<span class="nc" id="L12">	MAR(&quot;MAR&quot;,3),</span>
+<span class="nc" id="L13">	APR(&quot;APR&quot;,4),</span>
+<span class="nc" id="L14">	MAY(&quot;MAY&quot;,5),</span>
+<span class="nc" id="L15">	JUN(&quot;JUN&quot;,6),</span>
+<span class="nc" id="L16">	JUL(&quot;JUL&quot;,7),</span>
+<span class="nc" id="L17">	AUG(&quot;AUG&quot;,8),</span>
+<span class="nc" id="L18">	SEP(&quot;SEP&quot;,9),</span>
+<span class="nc" id="L19">	OCT(&quot;OCT&quot;,10),</span>
+<span class="nc" id="L20">	NOV(&quot;NOV&quot;,11),</span>
+<span class="nc" id="L21">	DEC(&quot;DEC&quot;,12);</span>
+	
+
+	private String value;
+	
+	private int index;
+
+<span class="nc" id="L28">	MonthEnum(String value,int index) {</span>
+<span class="nc" id="L29">		this.value = value;</span>
+<span class="nc" id="L30">		this.index = index;</span>
+<span class="nc" id="L31">	}</span>
+
+	@Override
+	public String toString() {
+<span class="nc" id="L35">		return String.valueOf(value);</span>
+	}
+
+	public static MonthEnum fromValue(String text) {
+<span class="nc bnc" id="L39" title="All 2 branches missed.">		for (MonthEnum b : MonthEnum.values()) {</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">			if (b.value.equalsIgnoreCase(text)) {</span>
+<span class="nc" id="L41">				return b;</span>
+			}
+		}
+<span class="nc" id="L44">		return null;</span>
+	}
+
+	public String getValue() {
+<span class="nc" id="L48">		return value;</span>
+	}
+
+	public void setValue(String value) {
+<span class="nc" id="L52">		this.value = value;</span>
+<span class="nc" id="L53">	}</span>
+
+	public int getIndex() {
+<span class="nc" id="L56">		return index;</span>
+	}
+
+	public void setIndex(int index) {
+<span class="nc" id="L60">		this.index = index;</span>
+<span class="nc" id="L61">	}</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
